@@ -15,7 +15,7 @@ export const projects: Project[] = [
       "Developed a web application to support professional networking with integrated LLMs to generate content and automate workflows.",
     link: "https://example.com/project1",
     color: "#7DD3FC",
-    position: [-8, 0, -5],
+    position: [-8, 0, 0],
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ export const projects: Project[] = [
       "Developed an interactive web app where users could predict match scores, create friend groups, and compete on leaderboards.",
     link: "https://example.com/project2",
     color: "#C77DFF",
-    position: [0, 0, 0],
+    position: [0, 0, 1],
   },
   {
     id: 3,
@@ -33,6 +33,6 @@ export const projects: Project[] = [
       "React-based HR management platform to streamline employee organization and internal processes",
     link: "https://example.com/project3",
     color: "#86EFAC",
-    position: [8, 0, 5],
+    position: [8, 0, 2],
   },
 ];
