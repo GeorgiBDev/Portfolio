@@ -11,6 +11,7 @@ import { ProjectPortal } from "./ProjectPortal";
 import { Player } from "./Player";
 import { Ground } from "./Ground";
 import { projects } from "@/data/projects";
+import { staticColliders } from "@/data/colliders";
 
 interface GameWorldProps {
   onProjectEnter: (projectId: number) => void;
@@ -117,6 +118,34 @@ export const GameWorld = ({ onProjectEnter, currentLevel }: GameWorldProps) => {
         }
       });
 
+      staticColliders.forEach((box) => {
+        const halfW = box.size[0] / 2;
+        const halfH = box.size[1] / 2;
+        const halfD = box.size[2] / 2;
+        const baseY = box.position[1] - halfH;
+        const topY = box.position[1] + halfH;
+
+        const verticalOverlap =
+          newPos[1] >= baseY - 0.5 && newPos[1] <= topY + 0.5;
+
+        if (verticalOverlap) {
+          const dx = newPos[0] - box.position[0];
+          const dz = newPos[2] - box.position[2];
+          const overlapX = halfW + playerRadius - Math.abs(dx);
+          const overlapZ = halfD + playerRadius - Math.abs(dz);
+
+          if (overlapX > 0 && overlapZ > 0) {
+            if (overlapX < overlapZ) {
+              newPos[0] += (dx > 0 ? 1 : -1) * overlapX;
+              newVelocity.x = 0;
+            } else {
+              newPos[2] += (dz > 0 ? 1 : -1) * overlapZ;
+              newVelocity.z = 0;
+            }
+          }
+        }
+      });
+
       let isOnPlatform = false;
       let platformHeight = 0;
 
@@ -137,6 +166,25 @@ export const GameWorld = ({ onProjectEnter, currentLevel }: GameWorldProps) => {
             platformHeight = Math.max(platformHeight, level.y);
           }
         });
+      });
+
+      staticColliders.forEach((box) => {
+        const halfW = box.size[0] / 2;
+        const halfH = box.size[1] / 2;
+        const halfD = box.size[2] / 2;
+        const topY = box.position[1] + halfH;
+
+        const withinXZ =
+          Math.abs(newPos[0] - box.position[0]) <= halfW &&
+          Math.abs(newPos[2] - box.position[2]) <= halfD;
+        const isComingFromAbove =
+          newPos[1] <= topY + 0.5 && playerPosition[1] > topY;
+        const isFalling = newVelocity.y <= 0;
+
+        if (withinXZ && isComingFromAbove && isFalling) {
+          isOnPlatform = true;
+          platformHeight = Math.max(platformHeight, topY);
+        }
       });
 
       if (newPos[1] <= 0.5) {
@@ -245,7 +293,7 @@ export const GameWorld = ({ onProjectEnter, currentLevel }: GameWorldProps) => {
         <Environment preset="night" />
 
         <Ground />
-        <Player position={playerPosition} />
+        <Player position={playerPosition} velocity={playerVelocity.current} />
 
         {projects.map((project) => (
           <ProjectPortal

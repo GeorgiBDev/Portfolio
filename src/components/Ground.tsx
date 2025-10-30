@@ -66,22 +66,6 @@ export const Ground = () => {
         ))}
       </group>
 
-      {[-8, 0, 8].map((x, i) => (
-        <group key={`stairs-${i}`} position={[x, 0, 0]}>
-          {[0, 1, 2].map((step) => (
-            <mesh
-              key={step}
-              position={[0, step * 0.15, -2 - step * 0.3]}
-              castShadow
-              receiveShadow
-            >
-              <boxGeometry args={[2, 0.15, 0.5]} />
-              <meshStandardMaterial color="#6a5a8a" roughness={0.3} />
-            </mesh>
-          ))}
-        </group>
-      ))}
-
       <group ref={platformsRef}>
         {[
           { pos: [-15, -2, -8], size: [4, 6, 4], color: "#C77DFF" },
