@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -12,6 +12,7 @@ import { Player } from "./Player";
 import { Ground } from "./Ground";
 import { projects } from "@/data/projects";
 import { staticColliders } from "@/data/colliders";
+import { CanvasLoader } from "./CanvasLoader";
 
 interface GameWorldProps {
   onProjectEnter: (projectId: number) => void;
@@ -225,88 +226,94 @@ export const GameWorld = ({ onProjectEnter, currentLevel }: GameWorldProps) => {
   return (
     <div className="fixed inset-0 w-full h-full">
       <Canvas shadows>
-        <PerspectiveCamera
-          makeDefault
-          position={[
-            playerPosition[0],
-            playerPosition[1] + 8,
-            playerPosition[2] + 12,
-          ]}
-        />
-        <OrbitControls
-          enableZoom={false}
-          enableRotate={false}
-          enablePan={false}
-          target={[playerPosition[0], playerPosition[1] + 1, playerPosition[2]]}
-        />
-
-        <ambientLight intensity={0.3} color="#E0AAFF" />
-
-        <directionalLight
-          position={[15, 20, 10]}
-          intensity={1.2}
-          color="#ffffff"
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-left={-20}
-          shadow-camera-right={20}
-          shadow-camera-top={20}
-          shadow-camera-bottom={-20}
-          shadow-bias={-0.0001}
-        />
-
-        <directionalLight
-          position={[-10, 15, -10]}
-          intensity={0.6}
-          color="#C77DFF"
-        />
-
-        <pointLight
-          position={[-12, 6, 0]}
-          intensity={1.5}
-          color="#C77DFF"
-          distance={15}
-        />
-        <pointLight
-          position={[12, 6, 0]}
-          intensity={1.5}
-          color="#7DD3FC"
-          distance={15}
-        />
-        <pointLight
-          position={[0, 3, -8]}
-          intensity={1.2}
-          color="#86EFAC"
-          distance={12}
-        />
-
-        <Stars
-          radius={100}
-          depth={50}
-          count={5000}
-          factor={4}
-          saturation={0.5}
-          fade
-          speed={1}
-        />
-        <Environment preset="night" />
-
-        <Ground />
-        <Player position={playerPosition} velocity={playerVelocity.current} />
-
-        {projects.map((project) => (
-          <ProjectPortal
-            key={project.id}
-            project={project}
-            isUnlocked={project.id <= currentLevel}
+        <Suspense fallback={<CanvasLoader />}>
+          <PerspectiveCamera
+            makeDefault
+            position={[
+              playerPosition[0],
+              playerPosition[1] + 8,
+              playerPosition[2] + 12,
+            ]}
           />
-        ))}
+          <OrbitControls
+            enableZoom={false}
+            enableRotate={false}
+            enablePan={false}
+            target={[
+              playerPosition[0],
+              playerPosition[1] + 1,
+              playerPosition[2],
+            ]}
+          />
 
-        <mesh position={[0, -0.5, -10]}>
-          <planeGeometry args={[50, 20]} />
-          <meshStandardMaterial color="#1a0f2e" transparent opacity={0.3} />
-        </mesh>
+          <ambientLight intensity={0.3} color="#E0AAFF" />
+
+          <directionalLight
+            position={[15, 20, 10]}
+            intensity={1.2}
+            color="#ffffff"
+            castShadow
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-camera-left={-20}
+            shadow-camera-right={20}
+            shadow-camera-top={20}
+            shadow-camera-bottom={-20}
+            shadow-bias={-0.0001}
+          />
+
+          <directionalLight
+            position={[-10, 15, -10]}
+            intensity={0.6}
+            color="#C77DFF"
+          />
+
+          <pointLight
+            position={[-12, 6, 0]}
+            intensity={1.5}
+            color="#C77DFF"
+            distance={15}
+          />
+          <pointLight
+            position={[12, 6, 0]}
+            intensity={1.5}
+            color="#7DD3FC"
+            distance={15}
+          />
+          <pointLight
+            position={[0, 3, -8]}
+            intensity={1.2}
+            color="#86EFAC"
+            distance={12}
+          />
+
+          <Stars
+            radius={100}
+            depth={50}
+            count={5000}
+            factor={4}
+            saturation={0.5}
+            fade
+            speed={1}
+          />
+          <Environment preset="night" />
+
+          <Ground />
+          <Player position={playerPosition} velocity={playerVelocity.current} />
+
+          {projects.map((project) => (
+            <ProjectPortal
+              key={project.id}
+              project={project}
+              isUnlocked={project.id <= currentLevel}
+            />
+          ))}
+
+          <mesh position={[0, -0.5, -10]}>
+            <planeGeometry args={[50, 20]} />
+            <meshStandardMaterial color="#1a0f2e" transparent opacity={0.3} />
+          </mesh>
+        </Suspense>
       </Canvas>
     </div>
   );
