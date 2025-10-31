@@ -12,7 +12,7 @@ import { Player } from "./Player";
 import { Ground } from "./Ground";
 import { projects } from "@/data/projects";
 import { staticColliders } from "@/data/colliders";
-import { CanvasLoader } from "./CanvasLoader";
+import { SceneLoader } from "./SceneLoader";
 
 interface GameWorldProps {
   onProjectEnter: (projectId: number) => void;
@@ -225,8 +225,9 @@ export const GameWorld = ({ onProjectEnter, currentLevel }: GameWorldProps) => {
 
   return (
     <div className="fixed inset-0 w-full h-full">
+      <SceneLoader />
       <Canvas shadows>
-        <Suspense fallback={<CanvasLoader />}>
+        <Suspense fallback={null}>
           <PerspectiveCamera
             makeDefault
             position={[
